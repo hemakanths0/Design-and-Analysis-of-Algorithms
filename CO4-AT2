@@ -1,0 +1,111 @@
+S.Hemakanth
+192524156
+
+Q1: warehouse delivery route optimization(greedy strategy)
+
+class DisjointSet:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    def union(self, x, y):
+        rx = self.find(x)
+        ry = self.find(y)
+        if rx == ry:
+            return False
+        if self.rank[rx] < self.rank[ry]:
+            self.parent[rx] = ry
+        elif self.rank[rx] > self.rank[ry]:
+            self.parent[ry] = rx
+        else:
+            self.parent[ry] = rx
+            self.rank[rx] += 1
+        return True
+class DisjointSet:
+    def __init__(self, n):
+        self.parent = list(range(n))
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    def union(self, x, y):
+        px = self.find(x)
+        py = self.find(y)
+        if px != py:
+            self.parent[py] = px
+            return True
+        return False
+def kruskal(vertices, edges):
+    edges.sort(key=lambda x: x[2])
+    ds = DisjointSet(len(vertices))
+    mst = []
+    total_cost = 0
+    for u, v, cost in edges:
+        if ds.union(vertices.index(u), vertices.index(v)):
+            mst.append((u, v, cost))
+            total_cost += cost
+
+    return mst, total_cost
+
+vertices = ['A', 'B', 'C', 'D']
+edges = [
+    ('A', 'B', 2),
+    ('B', 'C', 3),
+    ('A', 'C', 4),
+    ('C', 'D', 5),
+    ('B', 'D', 6)
+]
+mst, cost = kruskal(vertices, edges)
+print("Selected Routes:")
+for u, v, c in mst:
+    print(u, "-", v, ":", c)
+print("Minimum Transportation Cost =", cost)
+output:
+Selected Routes:
+A - B : 2
+B - C : 3
+C - D : 5
+Minimum Transportation Cost = 10
+
+
+Q2:manufacturing resource allocation (dynamic programming)
+
+investments = [20000, 30000, 40000, 50000]
+profits = [25000, 40000, 50000, 65000]
+products = ["A", "B", "C", "D"]
+
+budget = 100000
+n = len(products)
+
+dp = [[0 for _ in range(budget + 1)] for _ in range(n + 1)]
+
+for i in range(1, n + 1):
+    for w in range(budget + 1):
+        if investments[i - 1] <= w:
+            dp[i][w] = max(
+                profits[i - 1] + dp[i - 1][w - investments[i - 1]],
+                dp[i - 1][w]
+            )
+        else:
+            dp[i][w] = dp[i - 1][w]
+
+max_profit = dp[n][budget]
+
+selected = []
+w = budget
+
+for i in range(n, 0, -1):
+    if dp[i][w] != dp[i - 1][w]:
+        selected.append(products[i - 1])
+        w -= investments[i - 1]
+
+selected.reverse()
+
+print("Selected Products:", selected)
+print("Maximum Profit: ₹", max_profit)
+output:
+    Selected Products: ['A', 'B', 'D']
+    Maximum Profit: ₹ 130000
