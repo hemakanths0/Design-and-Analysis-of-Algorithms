@@ -1,0 +1,59 @@
+S.Hemakanth
+192524156
+(Q1)
+def prim(graph):
+    n = len(graph)
+    selected = [False] * n
+    selected[0] = True
+    total_weight = 0
+    for _ in range(n - 1):
+        minimum = float('inf')
+        x = y = -1
+        for i in range(n):
+            if selected[i]:
+                for j in range(n):
+                    if not selected[j] and graph[i][j] != 0:
+                        if graph[i][j] < minimum:
+                            minimum = graph[i][j]
+                            x, y = i, j
+        selected[y] = True
+        total_weight += minimum
+    print("total weight =", total_weight)
+graph = [
+    [0, 2, 3],
+    [2, 0, 1],
+    [3, 1, 0]
+]
+prim(graph)
+
+
+(Q2)
+def find(parent, node):
+    if parent[node] == node:
+        return node
+    return find(parent, parent[node])
+def union(parent, x, y):
+    root_x = find(parent, x)
+    root_y = find(parent, y)
+    parent[root_y] = root_x
+def kruskal_mst(edges, num_nodes):
+    edges.sort(key=lambda edge: edge[2])
+    parent = list(range(num_nodes))
+    mst_cost = 0
+    print("Edges in MST:")
+    for u, v, weight in edges:
+        if find(parent, u) != find(parent, v):
+            union(parent, u, v)
+            mst_cost += weight
+            print("(", u, ",", v, ") -->", weight)
+    return mst_cost
+edges = [
+    (0, 1, 2),
+    (0, 2, 3),
+    (1, 2, 1),
+    (1, 3, 4),
+    (2, 3, 5)
+]
+num_nodes = 4
+cost = kruskal_mst(edges, num_nodes)
+print("Minimum Cost =", cost)
