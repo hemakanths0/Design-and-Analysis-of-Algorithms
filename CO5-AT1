@@ -1,0 +1,192 @@
+S.Hemakanth
+192524156
+
+Q1: Job Scheduling (Backtracking / NP-Hard Problem)
+
+jobs=[
+{"name":"J1","deadline":5,"skill":"Java"},
+{"name":"J2","deadline":7,"skill":"Python"},
+{"name":"J3","deadline":8,"skill":"Java"}
+]
+employees={
+"E1":["Java"],
+"E2":["Python","Java"]
+}
+assignment={}
+def is_valid(job,employee):
+    return job["skill"] in employees[employee]
+def schedule_jobs(job_index):
+    if job_index==len(jobs):
+        return True
+    job=jobs[job_index]
+    for employee in employees:
+        if is_valid(job,employee):
+            assignment[job["name"]]=employee
+            if schedule_jobs(job_index+1):
+                return True
+            del assignment[job["name"]]
+    return False
+if schedule_jobs(0):
+    for job,emp in assignment.items():
+        print(job,"-->",emp)
+else:
+    print("No feasible assignment exists.")
+
+ouput:
+J1 --> E1
+J2 --> E2
+J3 --> E1
+
+
+Problem:
+A company must assign jobs to employees such that:
+1.Every job is completed before its deadline.
+2.No employee handles more than one job at a time.
+3.Employees have the required skills for the assigned job.
+
+Constraints:
+1. Deadline Constraint** – Each job must be completed before its deadline.
+2. Employee Availability Constraint** – An employee cannot work on multiple jobs simultaneously.
+3. Skill Requirement Constraint** – The employee must possess the required skills for the job.
+
+Commands / Algorithm Steps:
+1. Start.
+2. Select an unassigned job.
+3. Choose an employee for the job.
+4. Check whether the employee has the required skills.
+5. Check whether the employee is available during the required time.
+6. Check whether the job can be completed before its deadline.
+7. If all constraints are satisfied, assign the job to the employee.
+8. Move to the next unassigned job.
+9. If no valid employee is found, remove the previous assignment (backtrack).
+10. Try another employee.
+11. Repeat until all jobs are assigned.
+12. Display the final job schedule.
+13. Stop.
+
+Pruning:
+1.Reject employees who do not have the required skills.
+2.Reject assignments that miss deadlines.
+3.Reject assignments causing overlapping work schedules.
+4.Continue searching only with feasible assignments.
+
+State Space Representation:
+Start
+├── J1 → E1
+│   ├── J2 → E2
+│   └── J2 → E3
+├── J1 → E2
+└── J1 → E3
+
+Complexity:
+1.Time Complexity: O(mⁿ)
+    m = number of employees
+    n = number of jobs
+2.Space Complexity:O(n)
+
+Classification:
+P: Problems solvable in polynomial time.
+NP: Solutions can be verified in polynomial time.
+NP-Hard:Job Scheduling Problem.
+
+Justification:
+Backtracking systematically explores possible job assignments. 
+Constraints are checked before proceeding, and invalid assignments are pruned early.
+This ensures that all jobs are assigned while satisfying deadlines, employee availability, and skill requirements.
+
+
+
+Q2. Exam Timetabling (Graph Coloring / NP-Complete Problem)
+graph={
+"E1":["E2","E3"],
+"E2":["E1","E4"],
+"E3":["E1"],
+"E4":["E2"]
+}
+slots=["Slot1","Slot2","Slot3"]
+schedule={}
+def safe(exam,slot):
+    for neighbor in graph[exam]:
+        if neighbor in schedule and schedule[neighbor]==slot:
+            return False
+    return True
+def timetable(exams,index):
+    if index==len(exams):
+        return True
+    exam=exams[index]
+    for slot in slots:
+        if safe(exam,slot):
+            schedule[exam]=slot
+            if timetable(exams,index+1):
+                return True
+            del schedule[exam]
+    return False
+exams=list(graph.keys())
+if timetable(exams,0):
+    print("Exam Timetable:")
+    for exam,slot in schedule.items():
+        print(exam,"->",slot)
+else:
+    print("No valid timetable exists")
+
+output:
+Exam Timetable:
+E1 -> Slot1
+E2 -> Slot2
+E3 -> Slot2
+E4 -> Slot1
+
+
+Problem:
+A university must schedule exams so that:
+No student has overlapping exams.
+Room capacities are sufficient.
+Available time slots are used efficiently.
+
+Constraints:
+1.Student Conflict Constraint – Exams with common students cannot be scheduled at the same time.
+2.Room Capacity Constraint – Number of students must not exceed room capacity.
+3.Time Slot Constraint – Only a limited number of time slots are available.
+
+Commands / Algorithm Steps
+1.Start.
+2.Create a graph where each exam is a vertex.
+3.Draw an edge between exams that have common students.
+4.Select an uncolored exam.
+5.Assign a time slot (color) to the exam.
+6.Check if any adjacent exam has the same color.
+7.Check room capacity for the assigned slot.
+8.If constraints are satisfied, keep the assignment.
+9.Move to the next exam.
+10.If a conflict occurs, remove the assignment (backtrack).
+11.Try another time slot.
+12.Repeat until all exams are assigned time slots.
+13.Display the final exam timetable.
+14.Stop.
+
+Pruning:
+1.Reject a time slot if an adjacent exam already uses it.
+2.Reject assignments that exceed room capacity.
+3.Schedule highly conflicting exams first to reduce search space.
+
+State Space Representation:
+  Exam A → Slot 1
+  Exam B → Slot 2
+  Exam C → Slot 1
+  Exam D → Slot 3
+
+Complexity:
+1.Time Complexity: O(kⁿ)
+k = number of time slots
+n = number of exams
+2.Space Complexity: O(n)
+
+Classification:
+P: Problems solvable in polynomial time.
+NP: Solutions verifiable in polynomial time.
+NP-Complete: Exam Timetabling (modeled as Graph Coloring).
+
+Justification:
+Backtracking assigns time slots while checking conflicts and room capacities.
+Graph coloring ensures that conflicting exams receive different time slots, producing a 
+feasible and conflict-free exam schedule.
